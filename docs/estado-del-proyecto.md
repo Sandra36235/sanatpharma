@@ -20,14 +20,14 @@ La migración debe preservar las diferencias detectadas en el control: referenci
 
 ## Implementación pendiente
 
-Todavía no hay aplicación, esquema SQL desplegado, usuarios creados ni datos cargados desde este repositorio. Haber documentado el modelo no significa que esté implementado en Supabase.
+Se implementaron las migraciones SQL de tablas, permisos, historial, forecast y almacenamiento privado. Incluyen pruebas automatizadas con datos ficticios. El despliegue y sus verificaciones se registran en `docs/despliegue.md`. Todavía no hay interfaz, usuarios operativos creados ni datos comerciales importados desde este repositorio.
 
-El siguiente trabajo técnico parte de estas decisiones: implementar las migraciones y permisos, y después las pantallas de carga y forecast. No requiere volver a definir el flujo desde cero.
+El siguiente trabajo de interfaz parte de estas decisiones y migraciones: pantallas de carga y forecast. No requiere volver a definir el flujo desde cero.
 
 ## Aspectos todavía abiertos
 
 - Alojamiento del frontend, sin costo.
-- Identificación y conexión del proyecto Supabase creado por la usuaria; no guardar claves secretas en Git.
+- Proyecto Supabase identificado: `fgdqzwqucmlkultcqkmk`; no guardar claves secretas en Git.
 - Plazo de pago del saldo de las facturas.
 - Equivalencias de unidades, solamente si al cargar documentos se detectan unidades distintas.
 - Formato de exportación que resulte más útil para el sistema empresarial y mecanismo de respaldo independiente.

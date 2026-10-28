@@ -7,8 +7,9 @@ Herramienta para registrar proformas y facturas del proveedor, seguir sus embarq
 - [Modelo de datos y diagrama ER](docs/modelo-de-datos.md)
 - [Flujo, reglas de negocio y alcance](docs/reglas-de-negocio.md)
 - [Estado del proyecto y decisiones pendientes](docs/estado-del-proyecto.md)
+- [Instalación, permisos y validación de Supabase](docs/instalacion-supabase.md)
 
-La documentación conserva las decisiones tomadas durante el trabajo con el Excel FORECAST Y CONTROL. El repositorio todavía no contiene una aplicación ni migraciones ejecutables.
+La documentación conserva las decisiones tomadas durante el trabajo con el Excel FORECAST Y CONTROL. El repositorio incluye las migraciones ejecutables de Supabase y pruebas de integridad, permisos y forecast. La interfaz de la aplicación está pendiente.
 
 ## Usuarios
 
