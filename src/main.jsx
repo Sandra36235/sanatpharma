@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { LayoutDashboard, Package, Files, ReceiptText, Ship, Wallet, Users, Search, Plus, ArrowUpRight, ArrowRight, Download, RefreshCw, LogOut, X, ChevronRight, FileText, Check, AlertCircle, Anchor, Upload, Eye, Trash2, Leaf, LockKeyhole } from 'lucide-react';
+import { Gauge, LayoutDashboard, Package, Files, ReceiptText, Ship, Wallet, Users, Search, Plus, ArrowUpRight, ArrowRight, Download, RefreshCw, LogOut, X, ChevronRight, FileText, Check, AlertCircle, Anchor, Upload, Eye, Trash2, Leaf, LockKeyhole } from 'lucide-react';
 import { supabase, configured, exampleMode, number, money, date, today, errorMessage, loadData, rpc, save, downloadCSV } from './lib';
 import { demoData } from './demo';
+import { Dashboard } from './dashboard';
 import './style.css';
 
-const NAV=[['forecast','Forecast',LayoutDashboard],['productos','Productos',Package],['proformas','Proformas',Files],['facturas','Facturas',ReceiptText],['seguimiento','Seguimiento',Ship],['pagos','Pagos',Wallet],['usuarios','Usuarios',Users]];
-const TITLES={forecast:['Todo tu pedido, en perspectiva.','Consulta lo pedido, lo facturado y lo que falta recibir.'],productos:['Catálogo de productos','Una referencia compartida para todos tus documentos.'],proformas:['Proformas','El pedido original y su avance, sin perder el detalle.'],facturas:['Facturas comerciales','Lo que el proveedor factura, tal como lo emite.'],seguimiento:['Seguimiento de llegadas','Fechas estimadas, fechas reales y recepción física.'],pagos:['Control de pagos','Anticipos y saldos de cada factura, por separado.'],usuarios:['Personas y accesos','Un espacio compartido, con permisos para cada función.']};
+const NAV=[['dashboard','Dashboard',Gauge],['forecast','Forecast',LayoutDashboard],['productos','Productos',Package],['proformas','Proformas',Files],['facturas','Facturas',ReceiptText],['seguimiento','Seguimiento',Ship],['pagos','Pagos',Wallet],['usuarios','Usuarios',Users]];
+const TITLES={dashboard:['Tu pedido, de un vistazo.','Qué falta facturar, qué viene en camino y qué ya llegó.'],forecast:['Todo tu pedido, en perspectiva.','Consulta lo pedido, lo facturado y lo que falta recibir.'],productos:['Catálogo de productos','Una referencia compartida para todos tus documentos.'],proformas:['Proformas','El pedido original y su avance, sin perder el detalle.'],facturas:['Facturas comerciales','Lo que el proveedor factura, tal como lo emite.'],seguimiento:['Seguimiento de llegadas','Fechas estimadas, fechas reales y recepción física.'],pagos:['Control de pagos','Anticipos y saldos de cada factura, por separado.'],usuarios:['Personas y accesos','Un espacio compartido, con permisos para cada función.']};
 const blankLine=()=>({key:crypto.randomUUID(),producto_id:'',cantidad:'',unidad:'CAJA',packing:'',precio_unitario:'',referencia_proforma_documento:'',asignaciones:[]});
 const sum=(rows,key)=>rows.reduce((n,r)=>n+Number(r[key]||0),0);
 const byId=(rows,id)=>rows.find(r=>r.id===id);
@@ -22,7 +23,7 @@ function Modal({title,children,onClose,wide=false}) {
 }
 function App() {
   const [session,setSession]=useState(null), [ready,setReady]=useState(exampleMode), [profile,setProfile]=useState(null), [data,setData]=useState(exampleMode?demoData():null);
-  const [page,setPage]=useState('forecast'),[modal,setModal]=useState(null),[busy,setBusy]=useState(false),[loading,setLoading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+  const [page,setPage]=useState('dashboard'),[modal,setModal]=useState(null),[busy,setBusy]=useState(false),[loading,setLoading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
   const [passwordMode,setPasswordMode]=useState(new URLSearchParams(location.search).get('acceso')==='1' || /type=(invite|recovery)/.test(location.hash));
   const [query,setQuery]=useState('');
   useEffect(()=>{
@@ -69,9 +70,10 @@ function App() {
     <aside className="sidebar"><Brand/><div className="workspace-label">ESPACIO DE TRABAJO</div><nav aria-label="Navegación principal">{NAV.map(([id,label,Icon])=><button key={id} aria-label={label} className={page===id?'nav-item active':'nav-item'} onClick={()=>{setPage(id);setQuery('');}} aria-current={page===id?'page':undefined}><Icon size={19}/><span>{label}</span>{page===id&&<span className="nav-dot"/>}</button>)}</nav><div className="sidebar-bottom"><div className="small-label">TODO EN UN MISMO LUGAR</div><p>Del pedido a la llegada.<br/>Cada documento cuenta.</p><div className="user"><div className="avatar">{profile.nombre.slice(0,2).toUpperCase()}</div><div><strong>{profile.nombre}</strong><small>{admin?'Administración':'Solo consulta'}</small></div><button aria-label="Cerrar sesión" onClick={signout} className="icon-button"><LogOut size={16}/></button></div></div></aside>
     <div className="main-wrap"><header className="topbar"><div className="breadcrumb">Importaciones <ChevronRight size={14}/><strong>{NAV.find(n=>n[0]===page)[1]}</strong></div><div className="topbar-right"><span className="connection"><i/>{exampleMode?'Datos ficticios':'Espacio conectado'}</span><span className="today">{date(today())}</span></div></header>
     <main>{exampleMode&&<div className="demo-banner"><Eye size={16}/><span>Vista de ejemplo · datos ficticios · los cambios no se guardan</span><a href="/">Ir al acceso real <ArrowRight size={14}/></a></div>}
-      <div className="page-heading"><div><div className="eyebrow">SANAT PHARMA / {page==='forecast'?'VISIBILIDAD Y CONTROL':'CONTROL DE IMPORTACIONES'}</div><h1>{TITLES[page][0]}</h1><p>{TITLES[page][1]}</p></div><button className="refresh-button" onClick={refresh} disabled={loading||exampleMode} aria-label="Actualizar datos"><RefreshCw size={17} className={loading?'spin':''}/></button></div>
+      <div className="page-heading"><div><div className="eyebrow">SANAT PHARMA / {page==='forecast'||page==='dashboard'?'VISIBILIDAD Y CONTROL':'CONTROL DE IMPORTACIONES'}</div><h1>{TITLES[page][0]}</h1><p>{TITLES[page][1]}</p></div><button className="refresh-button" onClick={refresh} disabled={loading||exampleMode} aria-label="Actualizar datos"><RefreshCw size={17} className={loading?'spin':''}/></button></div>
       {error&&<div className="message error" role="alert"><AlertCircle size={18}/>{error}<button className="icon-button" aria-label="Cerrar aviso" onClick={()=>setError('')}><X size={16}/></button></div>}
       {notice&&<div className="message success" role="status"><Check size={18}/>{notice}</div>}
+      {page==='dashboard'&&<Dashboard data={data} go={p=>{setPage(p);setQuery('');}}/>}
       {page==='forecast'&&<Forecast data={data} query={query} setQuery={setQuery}/>}
       {page==='productos'&&<Products data={data} admin={admin} query={query} setQuery={setQuery} open={open}/>}
       {(page==='proformas'||page==='facturas')&&<Documents kind={page==='proformas'?'proforma':'factura'} data={data} admin={admin} open={open}/>}
