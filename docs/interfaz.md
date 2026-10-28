@@ -11,6 +11,8 @@ Aplicación React y Vite conectada a Supabase con la clave pública de publicaci
 
 `npm run build` genera `dist/` para un alojamiento estático. El alojamiento definitivo todavía no está elegido. No se publicaron datos ni documentos en un hosting nuevo.
 
+En esta computadora, las dependencias y la configuración pública local ya están preparadas. El archivo `INICIAR CONTROL.cmd` permite volver a iniciar el servidor en el puerto 5173; mantener su ventana abierta durante el uso. Si el servidor ya está abierto, utilizar directamente su dirección y no abrir otra instancia en el mismo puerto.
+
 ## Pantallas
 
 - Inicio de sesión con correo y contraseña, recuperación y establecimiento de contraseña por invitación.
@@ -33,6 +35,8 @@ Los correos del equipo se proporcionaron en la conversación y no se guardan en 
 Crear las cuentas mediante Authentication, utilizando invitaciones para que cada persona defina su contraseña. Después, asignar los UUID correspondientes en `perfiles`: administración para las personas responsables del registro y consulta para gerencia. No introducir contraseñas en SQL ni en este repositorio.
 
 La entrega local no sustituye el alojamiento accesible desde las computadoras del equipo. La prueba de inicio de sesión con una cuenta real requiere que su titular complete su contraseña.
+
+La usuaria eligió la prueba local y confirmó tres accesos: dos de administración y uno de consulta. El estado comprobado de altas e invitaciones se conserva en `docs/despliegue.md`. La URL de autenticación está configurada para `http://127.0.0.1:5173/?acceso=1`; debe cambiarse antes de invitar usuarios para un alojamiento definitivo.
 
 ## Ejemplo visual
 

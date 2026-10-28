@@ -9,6 +9,7 @@ Aplicar los archivos de `supabase/migrations/` en orden de nombre, una sola vez,
 1. `202610280001_control.sql`: tablas, auditoría, restricciones y perfiles.
 2. `202610280002_forecast.sql`: vistas de consulta y cálculo de anticipos/saldos.
 3. `202610280003_documentos.sql`: bucket privado de PDFs de hasta 10 MB y políticas de almacenamiento.
+4. `202610280004_operaciones.sql`: guardados transaccionales para los formularios de productos, proformas, facturas y recepciones.
 
 Antes de ejecutar, comprobar que no existan tablas de una instalación anterior. El esquema no contiene usuarios ni información comercial. Nunca ejecutar `tests/recorrido.sql` como una carga real: contiene información ficticia.
 
