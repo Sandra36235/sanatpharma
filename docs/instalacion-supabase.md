@@ -54,6 +54,8 @@ Registrar un adjunto con exactamente una referencia a proforma, factura o pago. 
 
 El recorrido ficticio contempla dos proformas, una factura compartida, una referencia desconocida, precios y packing diferentes, un pago del 30 % y una recepción parcial. Resultado esperado: pedido vigente 150 cajas, facturado 130, recibido 60, pendiente de facturar 30, pendiente de recibir de factura 70 y sin asignar 10. Al filtrar por proforma: 80/40 facturadas y 40/20 recibidas.
 
+`supabase/tests/verificar_proyecto.sql` ejecuta ese recorrido como propietario en el SQL Editor, verifica los resultados y revierte la transacción. No crea usuarios. Se ejecutó correctamente en el proyecto indicado; consultar el registro de despliegue. Las pruebas reversibles pueden avanzar secuencias internas aunque reviertan las filas: los identificadores de historial no deben interpretarse como una numeración continua de documentos.
+
 ## Referencias técnicas
 
 - [RLS y vistas con security_invoker](https://supabase.com/docs/guides/database/postgres/row-level-security)

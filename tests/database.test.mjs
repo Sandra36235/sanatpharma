@@ -4,6 +4,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 
 let db;
+let setupSQL;
 const uid = n => `00000000-0000-0000-0000-${String(n).padStart(12, '0')}`;
 async function scalar(sql) { return (await db.query(sql)).rows[0]; }
 async function rejected(sql, pattern) {
@@ -16,7 +17,7 @@ before(async () => {
   db = new PGlite();
   // Emula solo los contratos de Auth/Storage que utiliza la migración.
   // No sustituye la comprobación de API/Storage en el proyecto Supabase real.
-  await db.exec(`create role anon; create role authenticated; create schema auth;
+  setupSQL = `create role anon; create role authenticated; create schema auth;
     create table auth.users(id uuid primary key);
     create function auth.uid() returns uuid language sql stable as
     $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
@@ -27,7 +28,8 @@ before(async () => {
     create table storage.objects(id uuid default gen_random_uuid(), bucket_id text, name text);
     alter table storage.objects enable row level security;
     grant usage on schema storage to authenticated;
-    grant select, insert, update, delete on storage.objects to authenticated;`);
+    grant select, insert, update, delete on storage.objects to authenticated;`;
+  await db.exec(setupSQL);
   for (const f of (await readdir(new URL('../supabase/migrations/', import.meta.url))).sort()) {
     await db.exec(await readFile(new URL(`../supabase/migrations/${f}`, import.meta.url), 'utf8'));
   }
@@ -131,6 +133,14 @@ test('anónimo no tiene privilegios sobre tablas ni vistas', async () => {
     await rejected('select * from public.v_forecast_producto', /permission denied/);
   } finally { await db.exec(`reset role; set role authenticated; set request.jwt.claim.sub='${uid(1)}'`); }
 });
+test('todas las tablas de control tienen RLS y la secuencia del historial es privada', async () => {
+  await db.exec('reset role');
+  try {
+    assert.equal(+(await scalar(`select count(*) n from pg_tables where schemaname in ('public','control_privado') and not rowsecurity`)).n,0);
+    const a=await scalar(`select has_sequence_privilege('anon','public.historial_id_seq','USAGE') anon, has_sequence_privilege('authenticated','public.historial_id_seq','USAGE') autenticado`);
+    assert.equal(a.anon,false); assert.equal(a.autenticado,false);
+  } finally { await db.exec(`set role authenticated; set request.jwt.claim.sub='${uid(1)}'`); }
+});
 test('fechas reales y estimadas quedan auditadas y separadas', async () => {
   await db.exec(`update public.embarques set salida_real='2026-01-05' where id='${uid(601)}'`);
   const a=await scalar(`select anterior, nuevo, usuario_id from public.historial where tabla='embarques' and operacion='UPDATE' order by id desc limit 1`);
@@ -149,4 +159,19 @@ test('PDF privado: solo personal autorizado accede a rutas registradas; consulta
   await db.exec(`set request.jwt.claim.sub='${uid(3)}'`);
   assert.equal(+(await scalar('select count(*) n from storage.objects')).n,0);
   await db.exec(`set request.jwt.claim.sub='${uid(1)}'`);
+});
+test('el script de verificación del proyecto revierte todos los datos de prueba', async () => {
+  const sandbox = new PGlite();
+  try {
+    await sandbox.exec(setupSQL);
+    for (const f of (await readdir(new URL('../supabase/migrations/', import.meta.url))).sort()) {
+      await sandbox.exec(await readFile(new URL(`../supabase/migrations/${f}`, import.meta.url), 'utf8'));
+    }
+    const results=await sandbox.exec(await readFile(new URL('../supabase/tests/verificar_proyecto.sql', import.meta.url),'utf8'));
+    const r=results.at(-1).rows[0];
+    assert.match(r.resultado,/APROBADO/);
+    assert.equal(+r.productos_guardados,0);
+    assert.equal(+r.facturas_guardadas,0);
+    assert.equal(+r.historial_guardado,0);
+  } finally { await sandbox.close(); }
 });

@@ -30,6 +30,8 @@ $$;
 -- que dos solicitudes superen juntas los límites de asignación/recepción.
 create table control_privado.exclusion (id boolean primary key default true check (id), version bigint not null);
 insert into control_privado.exclusion values (true, 0);
+alter table control_privado.exclusion enable row level security;
+revoke all on control_privado.exclusion from public, anon, authenticated;
 
 create table public.productos (
   id uuid primary key default gen_random_uuid(),
@@ -177,6 +179,7 @@ create table public.historial (
   anterior jsonb,
   nuevo jsonb
 );
+revoke all on sequence public.historial_id_seq from public, anon, authenticated;
 
 create function control_privado.preparar_cambio() returns trigger
 language plpgsql security definer set search_path = '' as $$
