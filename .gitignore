@@ -1,0 +1,28 @@
+# Configuración local y credenciales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencias y resultados de compilación
+node_modules/
+dist/
+build/
+.vercel/
+.netlify/
+
+# Datos operativos y documentos del proveedor
+private/
+backups/
+uploads/
+*.xlsx
+*.xlsb
+*.xls
+*.csv
+*.pdf
+
+# Archivos del sistema y registros
+.DS_Store
+Thumbs.db
+*.log
