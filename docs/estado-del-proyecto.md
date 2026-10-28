@@ -20,9 +20,9 @@ La migración debe preservar las diferencias detectadas en el control: referenci
 
 ## Implementación pendiente
 
-Se implementaron las migraciones SQL de tablas, permisos, historial, forecast y almacenamiento privado. Incluyen pruebas automatizadas con datos ficticios. El despliegue y sus verificaciones se registran en `docs/despliegue.md`. Todavía no hay interfaz, usuarios operativos creados ni datos comerciales importados desde este repositorio.
+Se implementaron las migraciones SQL de tablas, permisos, historial, forecast y almacenamiento privado, junto con la interfaz React para su operación. Incluyen pruebas automatizadas con datos ficticios y funciones transaccionales para guardar documentos. El despliegue y sus verificaciones se registran en `docs/despliegue.md`. El estado de cuentas reales y alojamiento se documenta en `docs/interfaz.md`; no se importaron datos comerciales.
 
-El siguiente trabajo de interfaz parte de estas decisiones y migraciones: pantallas de carga y forecast. No requiere volver a definir el flujo desde cero.
+La interfaz dispone de pantallas de carga y forecast sobre estas decisiones y migraciones. La puesta en uso requiere completar cuentas, alojamiento y validación con documentos reales.
 
 ## Aspectos todavía abiertos
 

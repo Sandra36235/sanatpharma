@@ -175,3 +175,37 @@ test('el script de verificación del proyecto revierte todos los datos de prueba
     assert.equal(+r.historial_guardado,0);
   } finally { await sandbox.close(); }
 });
+test('el guardado de documentos es atómico y rechaza documentos sin líneas', async () => {
+  const header=JSON.stringify({id:uid(2001),proveedor:'DEMO',numero:'PF-ATOMICA',fecha_documento:'2026-10-28',moneda:'USD'});
+  await rejected(`select public.crear_documento('proforma','${header}'::jsonb,'[]'::jsonb)`,/debe contener productos/);
+  await rejected(`select public.crear_documento('proforma','${header}'::jsonb,
+    '[{"producto_id":"${uid(101)}","cantidad":1,"unidad":"CAJA","precio_unitario":9},
+      {"producto_id":"${uid(101)}","cantidad":0,"unidad":"CAJA","precio_unitario":9}]'::jsonb)`,/check constraint/);
+  assert.equal(+(await scalar(`select count(*) n from public.proformas where id='${uid(2001)}'`)).n,0);
+});
+test('el rol de consulta no puede invocar operaciones de escritura', async () => {
+  await db.exec(`set request.jwt.claim.sub='${uid(2)}'`);
+  try {
+    await rejected(`select public.crear_documento('proforma','{}'::jsonb,'[]'::jsonb)`,/Se requiere administración/);
+    await rejected(`select public.guardar_producto('{}'::jsonb,'{}'::jsonb)`,/Se requiere administración/);
+    await rejected(`select public.registrar_recepcion('{}'::jsonb,'[]'::jsonb)`,/Se requiere administración/);
+  } finally {await db.exec(`set request.jwt.claim.sub='${uid(1)}'`);}
+});
+test('la creación de factura y asignación se valida en la misma transacción', async () => {
+  await db.exec('begin');
+  try {
+    const h={id:uid(2002),proveedor:'DEMO',numero:'FAC-ATOMICA',fecha_emision:'2026-10-28',moneda:'USD',importe_documento:20};
+    const ls=[{producto_id:uid(101),cantidad:2,unidad:'CAJA',precio_unitario:10,asignaciones:[{detalle_proforma_id:uid(301),cantidad:2}]}];
+    await db.query('select public.crear_documento($1,$2,$3)',['factura',JSON.stringify(h),JSON.stringify(ls)]);
+    await db.exec('set constraints all immediate');
+    assert.equal(+(await scalar(`select sum(a.cantidad) n from public.asignaciones a join public.detalles_factura d on d.id=a.detalle_factura_id where d.factura_id='${uid(2002)}'`)).n,2);
+  } finally {await db.exec('rollback');}
+});
+test('producto y complemento se guardan juntos sin alterar su clave externa', async () => {
+  await db.exec('begin');
+  try {
+    await db.query('select public.guardar_producto($1,$2)',[JSON.stringify({id:uid(2003),codigo:'0001-TEST',nombre:'Ficticio',estado:'ACTIVO'}),JSON.stringify({packing_referencia:'20 cajas'})]);
+    assert.equal((await scalar(`select codigo from public.productos where id='${uid(2003)}'`)).codigo,'0001-TEST');
+    assert.equal((await scalar(`select packing_referencia from public.productos_complemento where id='${uid(2003)}'`)).packing_referencia,'20 cajas');
+  } finally {await db.exec('rollback');}
+});
