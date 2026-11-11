@@ -21,7 +21,9 @@ begin
     from information_schema.columns c
     join information_schema.columns r on r.table_schema = origen and r.table_name = t and r.column_name = c.column_name
     where c.table_schema = 'public' and c.table_name = t and c.is_generated = 'NEVER';
-    execute format('insert into public.%I (%s) select %s from %I.%I', t, cols, cols, origen, t);
+    execute format('insert into public.%I (%s) overriding system value select %s from %I.%I', t, cols, cols, origen, t);
   end loop;
 end $$;
 commit;
+-- El historial usa un contador propio: lo dejamos después del último registro restaurado.
+select setval(pg_get_serial_sequence('public.historial','id'), (select max(id) from public.historial));

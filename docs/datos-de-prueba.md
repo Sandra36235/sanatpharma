@@ -2,26 +2,21 @@
 
 ## Estado actual (11 de noviembre de 2026)
 
-- Los datos reales se respaldaron completos en el esquema **`respaldo_20261111`** de la misma base (27 tablas, 3.225 filas, verificadas tabla por tabla). La app no tiene acceso a ese esquema. **No borrarlo.**
-- La base quedó cargada con `supabase/datos-prueba.sql`: todo ficticio, para recorrer el proceso completo. Los usuarios (`perfiles`) y los catálogos de costos se conservaron.
+La base tiene **los datos reales** (restaurados desde el respaldo) más solo dos cosas de prueba para que el pedido sugerido funcione:
 
-## Qué trae el caso de prueba
-
-| Documento | Situación | Para practicar |
+| Qué | De dónde sale | Cómo quitarlo |
 |---|---|---|
-| PRB LO 001 2026 → factura PRB-INV-101 | Ciclo cerrado: recibida en Cochabamba, pagada (anticipo aplicado + cancelación), hoja de costos **cerrada** | Leer una hoja completa; reabrirla y corregir un % al costo |
-| PRB LO 002 2026 → factura PRB-INV-118 | Factura parcial en tránsito por Iquique; saldo pendiente; hoja en preparación | Registrar fechas, la cancelación del saldo, gastos y lotes |
-| PRB FI 014 2026 | Proforma enviada (EUR, FOB) | Girar el anticipo del 50 %, confirmarla, registrar su factura |
-| Pedido sugerido | 3 productos «pedir ya», 2 «pedir pronto», 3 cubiertos | Crear una proforma sugerida, ajustarla y enviarla |
+| Ventas por mes (nov-2025 a oct-2026), Cochabamba 60 % / Santa Cruz 40 % | Lo pedido a JAYWIN en las proformas de los últimos 24 meses ÷ 24, con estacionalidad suave y ±20 % de variación | `supabase/quitar-ventas-prueba.sql` |
+| Existencias al 10/11/2026 | Entre 1 y 8 meses de esa venta, para que haya productos en cada alerta | El mismo script |
 
-Proveedores: LAB ORIENTE (PRUEBA) y FARMA IBERICA (PRUEBA). Productos PRB-001 a PRB-008.
+Además, por decisión de Sandra, todas las proformas anteriores pasaron a estado **cerrada**, salvo 004 JB SEA 2026 y la proforma de prueba de BABARIA. En los datos no hay recepciones ni fechas reales de llegada, así que sin cerrarlas todo lo pedido desde 2023 contaba como «en camino».
 
-## Volver a cargar los datos de prueba
+Las proformas, facturas, embarques, la hoja de costos de la 007 JB P5 y sus pagos son reales y quedaron igual.
 
-Ejecutar `supabase/datos-prueba.sql` en el editor SQL de Supabase. Borra los datos operativos de `public` y deja el caso de prueba desde cero.
+## Respaldo
 
-## Volver a los datos reales
+Copia completa de `public` antes de todo esto en el esquema **`respaldo_20261111`** (27 tablas, 3.225 filas). La app no tiene acceso a ese esquema. **No borrarlo.** Para volver exactamente a ese punto: `supabase/restaurar-respaldo.sql`.
 
-Ejecutar `supabase/restaurar-respaldo.sql` (con el nombre del esquema de respaldo). Copia todo desde `respaldo_20261111` a `public`, sin disparadores, tal cual estaba. Lo registrado durante las pruebas se pierde.
+## Caso 100 % ficticio
 
-Antes de restaurar conviene revisar que no haya migraciones nuevas que cambien columnas: si las hay, la restauración copia solo las columnas que existen en ambos lados.
+`supabase/datos-prueba.sql` borra los datos operativos y carga un caso inventado (proveedores LAB ORIENTE y FARMA IBERICA, productos PRB-001 a PRB-008). Se usó una vez y se descartó porque no se relacionaba con la operación real; queda para capacitar a alguien sin mostrar datos de la empresa.
