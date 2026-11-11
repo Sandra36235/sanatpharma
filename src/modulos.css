@@ -35,3 +35,13 @@
 .milestones.four{grid-template-columns:repeat(4,1fr)}
 @media (max-width:1100px){.cost-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.model-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.condition-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:700px){.cost-summary,.model-grid,.condition-grid{grid-template-columns:1fr}.milestones.four{grid-template-columns:repeat(2,1fr)}}
+.pf-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-bottom:18px}
+.pf-chip{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;padding:12px 14px;border:1px solid #e3e9de;border-radius:7px;cursor:pointer;background:#fff}
+.pf-chip input{grid-row:span 2}
+.pf-chip strong{font-size:12px;color:#33493a}
+.pf-chip small{font-size:10px;color:#8a9484}
+.pf-chip.on{border-color:#7fa46f;background:#f4f8ee}
+.invoice-lines td{vertical-align:middle}
+.invoice-lines .badge{margin:2px 4px 2px 0}
+.packing-input{width:120px;text-align:left}
+.invoice-lines .badge{white-space:nowrap}

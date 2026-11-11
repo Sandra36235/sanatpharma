@@ -237,3 +237,58 @@ export function LineEditForm({value,busy,action}){
     <FormFooter busy={busy}/></form>;
 }
 export { ESTADOS_PROFORMA, INCOTERMS };
+
+// ───────────────────────────── Factura desde proformas ─────────────────────────────
+// Elige una o varias proformas del mismo proveedor, marca las líneas que vienen en la factura,
+// ajusta cantidad, packing y precio. Cada línea queda asignada a su proforma al guardar.
+export function InvoiceFromProformasForm({data,busy,action}){
+  const [cerradas,setCerradas]=useState(false),[proveedor,setProveedor]=useState(''),[pfs,setPfs]=useState([]),[sel,setSel]=useState({});
+  const [head,setHead]=useState({numero:'',fecha_emision:today(),importe_documento:'',vencimiento_saldo:'',observaciones:''});
+  const [error,setError]=useState('');
+  const abiertas=data.proformas.filter(p=>p.estado!=='sugerida'&&(cerradas||p.estado!=='cerrada'));
+  const proveedores=[...new Set(abiertas.map(p=>p.proveedor))].sort();
+  const disponibles=abiertas.filter(p=>p.proveedor===proveedor).sort((a,b)=>String(b.fecha_documento).localeCompare(String(a.fecha_documento)));
+  const lines=pfs.flatMap(id=>{const pf=byId(data.proformas,id);return data.detalles_proforma.filter(l=>l.proforma_id===id).sort((a,b)=>a.numero_linea-b.numero_linea).map(l=>{const f=data.v_forecast_proforma.find(x=>x.detalle_proforma_id===l.id)||{};return {...l,pf,producto:byId(data.productos,l.producto_id),vigente:+l.cantidad_pedida-+(l.cantidad_cancelada||0),pendiente:f.pendiente_facturar!=null?+f.pendiente_facturar:+l.cantidad_pedida-+(l.cantidad_cancelada||0)};});});
+  const moneda=pfs.length?byId(data.proformas,pfs[0]).moneda:'USD';
+  const monedas=[...new Set(pfs.map(id=>byId(data.proformas,id)?.moneda))];
+  function togglePf(id){setPfs(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);setSel(s=>Object.fromEntries(Object.entries(s).filter(([k])=>lines.find(l=>l.id===k)?.proforma_id!==id)));}
+  function toggleLine(l){setSel(s=>{if(s[l.id]){const {[l.id]:_,...rest}=s;return rest;}return {...s,[l.id]:{cantidad:String(l.pendiente>0?l.pendiente:l.vigente),packing:l.packing||'',precio:l.precio_unitario??''}};});}
+  const pendientesTodas=()=>setSel(Object.fromEntries(lines.filter(l=>l.pendiente>0).map(l=>[l.id,sel[l.id]||{cantidad:String(l.pendiente),packing:l.packing||'',precio:l.precio_unitario??''}])));
+  const elegidas=lines.filter(l=>sel[l.id]);
+  const issues=l=>{const v=sel[l.id];if(!v)return [];const out=[];const q=+v.cantidad;
+    if(q>l.pendiente)out.push(['amber',`${number(q-l.pendiente)} más de lo pendiente`]);else if(q<l.pendiente)out.push(['',`Parcial: quedan ${number(l.pendiente-q)}`]);
+    if((v.packing||'')!==(l.packing||''))out.push(['amber','Packing distinto']);
+    if(l.precio_unitario!=null&&v.precio!==''&&+v.precio!==+l.precio_unitario)out.push(['amber','Precio distinto']);
+    return out;};
+  const total=elegidas.reduce((n,l)=>n+(+sel[l.id].cantidad||0)*(+sel[l.id].precio||0),0);
+  const alertas=elegidas.filter(l=>issues(l).some(([t])=>t==='amber')).length;
+  function submit(e){e.preventDefault();setError('');
+    if(!elegidas.length){setError('Marca al menos una línea de las proformas.');return;}
+    if(monedas.length>1){setError('Las proformas elegidas tienen monedas distintas.');return;}
+    if(elegidas.some(l=>!(+sel[l.id].cantidad>0))){setError('Todas las líneas marcadas necesitan una cantidad mayor a cero.');return;}
+    const lineas=elegidas.map(l=>({producto_id:l.producto_id,cantidad:sel[l.id].cantidad,unidad:l.unidad,packing:sel[l.id].packing,precio_unitario:sel[l.id].precio,referencia_proforma_documento:l.pf.numero_proveedor||l.pf.numero,asignaciones:[{detalle_proforma_id:l.id,cantidad:sel[l.id].cantidad}]}));
+    action(()=>rpc('crear_documento',{tipo:'factura',cabecera:{id:crypto.randomUUID(),proveedor,numero:head.numero,fecha_emision:head.fecha_emision,moneda,importe_documento:head.importe_documento===''?String(Math.round(total*100)/100):head.importe_documento,vencimiento_saldo:head.vencimiento_saldo,observaciones:head.observaciones},lineas}),`Factura guardada con ${lineas.length} líneas asignadas a sus proformas`);}
+  return <form onSubmit={submit}>
+    <p>Elige el proveedor y las proformas que trae la factura. Marca las líneas que vienen y corrige cantidad, packing o precio según el documento del proveedor: las diferencias quedan señaladas.</p>
+    {error&&<div className="message error" role="alert">{error}</div>}
+    <div className="form-grid three"><Field label="Proveedor"><select required value={proveedor} onChange={e=>{setProveedor(e.target.value);setPfs([]);setSel({});}}><option value="">Seleccionar</option>{proveedores.map(p=><option key={p}>{p}</option>)}</select></Field>
+      <Field label="Número de factura"><input required value={head.numero} onChange={e=>setHead({...head,numero:e.target.value})}/></Field><Field label="Fecha de emisión"><input required type="date" value={head.fecha_emision} onChange={e=>setHead({...head,fecha_emision:e.target.value})}/></Field></div>
+    <label className="check"><input type="checkbox" checked={cerradas} onChange={e=>setCerradas(e.target.checked)}/> Mostrar también proformas cerradas</label>
+    {proveedor&&<><h3>Proformas de {proveedor}</h3>{disponibles.length?<div className="pf-picker">{disponibles.map(p=>{const pend=data.v_forecast_proforma.filter(f=>f.proforma_id===p.id).reduce((n,f)=>n+ +f.pendiente_facturar,0);return <label key={p.id} className={'pf-chip'+(pfs.includes(p.id)?' on':'')}><input type="checkbox" checked={pfs.includes(p.id)} onChange={()=>togglePf(p.id)}/><strong>{p.numero}</strong><small>{date(p.fecha_documento)} · {ESTADO_LABEL[p.estado]} · {number(pend)} por facturar</small></label>;})}</div>:<p className="soft-empty">No hay proformas {cerradas?'':'abiertas '}de este proveedor.</p>}</>}
+    {lines.length>0&&<><div className="section-title"><h3>Líneas ({elegidas.length} de {lines.length} marcadas)</h3><Button type="button" secondary onClick={pendientesTodas}>Marcar todo lo pendiente</Button></div>
+      <div className="table-scroll"><table className="invoice-lines"><thead><tr><th/><th>Producto</th><th>Proforma</th><th className="num">Pedido</th><th className="num">Pendiente</th><th className="num">Cantidad factura</th><th>Packing</th><th className="num">Precio</th><th>Revisar</th></tr></thead><tbody>{lines.map(l=>{const v=sel[l.id];const is=issues(l);return <tr key={l.id} className={v?'row-selected':''}>
+        <td><input type="checkbox" aria-label={`Incluir ${l.producto?.codigo}`} checked={!!v} onChange={()=>toggleLine(l)}/></td>
+        <td><strong>{l.producto?.nombre}</strong><small>{l.producto?.codigo} · {l.unidad}</small></td><td>{l.pf.numero}<small>línea {l.numero_linea}</small></td>
+        <td className="num">{number(l.vigente)}</td><td className={'num '+(l.pendiente<=0?'muted':'')}>{number(l.pendiente)}</td>
+        <td className="num">{v?<input className="qty-input" type="number" min="0.0001" step="0.0001" value={v.cantidad} onChange={e=>setSel({...sel,[l.id]:{...v,cantidad:e.target.value}})}/>:'—'}</td>
+        <td>{v?<input className="qty-input packing-input" value={v.packing} placeholder={l.packing||'Packing'} onChange={e=>setSel({...sel,[l.id]:{...v,packing:e.target.value}})}/>:(l.packing||'—')}</td>
+        <td className="num">{v?<input className="qty-input" type="number" min="0" step="0.0001" value={v.precio} onChange={e=>setSel({...sel,[l.id]:{...v,precio:e.target.value}})}/>:(l.precio_unitario==null?'—':money(l.precio_unitario,l.pf.moneda))}</td>
+        <td>{is.map(([t,txt])=><Badge key={txt} tone={t}>{txt}</Badge>)}</td></tr>;})}</tbody></table></div>
+      {monedas.length>1&&<p className="inline-note">Las proformas elegidas tienen monedas distintas ({monedas.join(', ')}). Una factura va en una sola moneda.</p>}
+      {alertas>0&&<p className="inline-note">{alertas} {alertas===1?'línea tiene':'líneas tienen'} diferencias con la proforma. Revísalas antes de guardar; se guardan como vienen en la factura.</p>}
+      <div className="document-total"><span>Total de las líneas marcadas</span><strong>{money(total,moneda)}</strong></div>
+      <div className="form-grid three"><Field label="Importe de la factura" hint="Vacío = total de las líneas"><input type="number" min="0" step="0.0001" value={head.importe_documento} placeholder={String(Math.round(total*100)/100)} onChange={e=>setHead({...head,importe_documento:e.target.value})}/></Field><Field label="Vencimiento del saldo" hint="Vacío si es contra documentos"><input type="date" value={head.vencimiento_saldo} onChange={e=>setHead({...head,vencimiento_saldo:e.target.value})}/></Field><span/></div>
+      {head.importe_documento!==''&&Math.abs(+head.importe_documento-total)>0.005&&<p className="inline-note">El importe difiere del total de las líneas en {money(+head.importe_documento-total,moneda)} (bonificaciones, flete u otra diferencia). Se guarda para revisarla.</p>}
+      <Field label="Observaciones"><textarea rows={2} value={head.observaciones} onChange={e=>setHead({...head,observaciones:e.target.value})}/></Field></>}
+    <FormFooter busy={busy} label="Guardar factura"/></form>;
+}

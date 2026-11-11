@@ -36,3 +36,7 @@ Pegar o cargar CSV con `;`, `,` o tabulación; decimales con coma o punto; se cr
 - Ventas: `CODIGO ; SUCURSAL ; MES (2026-09) ; CANTIDAD`
 
 Solo aparecen en el pedido sugerido los productos activos con complemento y «forecast» marcado.
+
+## Factura desde proformas
+
+En **Facturas → Desde proformas**: se elige el proveedor y una o varias de sus proformas (abiertas; opcionalmente también las cerradas). Aparecen sus líneas con lo pedido y lo pendiente de facturar; se marcan las que trae la factura y se ajustan **cantidad, packing y precio** como vienen en el documento del proveedor. La pantalla señala cada diferencia (más que lo pendiente, factura parcial, packing o precio distinto) y avisa si las proformas tienen monedas distintas. Al guardar, cada línea queda asignada a su línea de proforma, sin conciliación manual posterior. «Factura en blanco» sigue disponible para documentos que no salen de una proforma.

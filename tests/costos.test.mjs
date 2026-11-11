@@ -165,3 +165,16 @@ test('consulta ve pagos y costos pero no registra; anónimo no ve nada', async (
     await inTx(async () => { await fails('select * from public.v_costeo', /permission denied/); await fails('select * from public.gastos', /permission denied/); });
   } finally { await db.exec(`reset role; set role authenticated; set request.jwt.claim.sub='${uid(1)}'`); }
 });
+
+test('factura desde proformas: cada línea queda asignada aunque traiga más cantidad o otro packing', async () => inTx(async () => {
+  const id = (await one(`select public.crear_documento('factura',
+    '{"proveedor":"DEMO","numero":"FAC-DESDE-PF","fecha_emision":"2026-03-01","moneda":"USD","importe_documento":"237.5"}'::jsonb,
+    '[{"producto_id":"${uid(101)}","cantidad":"25","unidad":"CAJA","packing":"12 x 10","precio_unitario":"9.5","referencia_proforma_documento":"PF-DEMO-2",
+       "asignaciones":[{"detalle_proforma_id":"${uid(302)}","cantidad":"25"}]}]'::jsonb) id`)).id;
+  await db.exec('set constraints all immediate');
+  const a = await one(`select a.facturado as cantidad, a.diferencia_packing, a.diferencia_precio from public.v_asignaciones a
+    join public.detalles_factura d on d.id = a.detalle_factura_id where d.factura_id = '${id}'`);
+  assert.equal(+a.cantidad, 25); assert.equal(a.diferencia_packing, true); assert.equal(a.diferencia_precio, true);
+  const f = await one(`select facturado, exceso_facturado from public.v_forecast_proforma where detalle_proforma_id = '${uid(302)}'`);
+  assert.equal(+f.facturado, 65); assert.equal(+f.exceso_facturado, 15);
+}));
