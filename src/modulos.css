@@ -45,3 +45,67 @@
 .invoice-lines .badge{margin:2px 4px 2px 0}
 .packing-input{width:120px;text-align:left}
 .invoice-lines .badge{white-space:nowrap}
+/* Tarjetas y resúmenes de pagos y costos */
+.subfilter{display:flex;gap:8px;flex-wrap:wrap;padding:0 25px 16px}
+.subfilter button{border:1px solid #e3e9de;background:#fff;border-radius:999px;padding:6px 12px;font-size:11px;color:#62725d;cursor:pointer}
+.subfilter button span,.seg-count{opacity:.6;margin-left:4px}
+.subfilter button.selected{background:#2f5d4b;color:#fff;border-color:#2f5d4b}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:4px 25px 25px}
+.pay-card,.cost-card{border:1px solid #e6ebe1;border-radius:9px;padding:16px 18px;background:#fff;display:flex;flex-direction:column;gap:10px;text-align:left;font:inherit;color:inherit}
+.cost-card{cursor:pointer}.cost-card:hover{border-color:#9dbb8f;box-shadow:0 2px 10px rgba(47,93,75,.08)}
+.pay-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pay-top strong{display:block;font-family:'Manrope',sans-serif;font-size:14px;color:#26443a}
+.pay-top small{font-size:10px;color:#8a9484}
+.pay-amount small,.cost-card-mid small{display:block;font-size:9px;color:#8a9484;letter-spacing:.3px}
+.pay-amount strong,.cost-card-mid strong{display:block;font-family:'Manrope',sans-serif;font-size:22px;font-weight:650;color:#214f43;letter-spacing:-.4px;margin:2px 0}
+.pay-amount span,.cost-card-mid span{font-size:10px;color:#7d8a78}
+.cost-card-mid strong.next{font-size:15px;color:#a0702a}
+.pay-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.bar{display:flex;height:9px;border-radius:99px;overflow:hidden;background:#eef2ea}
+.seg{display:block;height:100%}
+.seg.a,.dot.a{background:#2f6b57}.seg.b,.dot.b{background:#7fa46f}.seg.c,.dot.c{background:#e8c98a}.seg.d,.dot.d{background:#a8c79a}
+.seg.g0,.dot.g0{background:#d9b56f}.seg.g1,.dot.g1{background:#c98c5a}.seg.g2,.dot.g2{background:#8fb3c9}.seg.g3,.dot.g3{background:#b39ad0}.seg.g4,.dot.g4{background:#e29a8f}.seg.g5,.dot.g5{background:#9fc0a4}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:10px;color:#6f7d69}
+.legend strong{color:#33493a;font-weight:600}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:0}
+.timeline{list-style:none;margin:0;padding:8px 0 0;border-top:1px solid #eef2ea;display:flex;flex-direction:column;gap:6px}
+.timeline li{display:grid;grid-template-columns:72px 1fr auto;gap:8px;font-size:11px}
+.timeline span{color:#8a9484}.timeline em{font-style:normal;color:#33493a;font-weight:600}
+.apply-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #eef2ea}
+.apply-row strong{display:block;font-size:12px}.apply-row small{font-size:10px;color:#8a9484}
+.mini-steps{display:flex;align-items:center;gap:5px}
+.mini-steps i{width:18px;height:5px;border-radius:9px;background:#e6ebe1}
+.mini-steps i.ok{background:#4f8a62}
+.mini-steps span{font-size:10px;color:#8a9484;margin-left:6px}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:#edf0e8;border-block:1px solid #edf0e8}
+.step{background:#fff;padding:14px 16px;display:flex;gap:10px;align-items:flex-start}
+.step strong{display:block;font-size:12px;color:#3c5241}.step small{display:block;font-size:10px;color:#8a9484;margin:2px 0 4px;line-height:1.5}
+.step-n{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;background:#eef2ea;color:#8a9484}
+.step.ok .step-n{background:#4f8a62;color:#fff}
+.step.now{background:#fbf6ea}.step.now .step-n{background:#d9b56f;color:#fff}
+.waterfall{display:flex;align-items:stretch;gap:10px;padding:20px 25px;flex-wrap:wrap}
+.waterfall>div{flex:1;min-width:150px;border:1px solid #eef2ea;border-radius:8px;padding:14px 16px}
+.waterfall>b{align-self:center;font-size:20px;color:#a0aa98;font-weight:400}
+.waterfall small{display:block;font-size:9px;color:#8a9484;letter-spacing:.3px}
+.waterfall strong{display:block;font-family:'Manrope',sans-serif;font-size:19px;font-weight:650;color:#26443a;margin:4px 0}
+.waterfall span{font-size:10px;color:#7d8a78}.waterfall em{font-style:normal;font-weight:700;color:#214f43}
+.waterfall .total{background:#edf3e8;border-color:#d8e5d0}.waterfall .total strong{color:#214f43;font-size:22px}
+.composition{padding:0 25px 22px;display:flex;flex-direction:column;gap:8px}
+.account-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;padding:4px 25px 20px}
+.account{border:1px solid #e6ebe1;border-radius:9px;padding:14px 16px;background:#fff;text-align:left;cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:4px}
+.account small{font-size:10px;color:#6f7d69;font-weight:600}
+.account strong{font-family:'Manrope',sans-serif;font-size:17px;color:#26443a}
+.account span{font-size:10px;color:#8a9484}
+.account.empty{background:#fafbf8;border-style:dashed}
+.account.on{border-color:#2f6b57;box-shadow:inset 0 0 0 1px #2f6b57;background:#f4f8ee}
+.account-detail{margin:0 25px 25px;border:1px solid #e6ebe1;border-radius:9px;padding:6px 18px 12px;background:#fcfdfb}
+.item-row{display:grid;grid-template-columns:1fr 150px 120px 130px auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid #eef2ea}
+.item-row:last-child{border-bottom:0}
+.item-row strong{display:block;font-size:12px;color:#33493a}.item-row small{display:block;font-size:10px;color:#8a9484}
+.pct-cell .qty-input{margin-left:auto;display:block}
+.product-costs{display:flex;flex-direction:column;padding:0 25px 20px}
+.product-cost{display:grid;grid-template-columns:1fr 130px 150px 1.1fr;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid #eef2ea}
+.product-cost strong{display:block;font-size:12px;color:#33493a}.product-cost small{display:block;font-size:10px;color:#8a9484}
+.lot-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font-size:10px;background:#eef3ea;color:#40604a;border-radius:99px;padding:3px 9px}
+@media (max-width:900px){.steps{grid-template-columns:1fr 1fr}.item-row,.product-cost{grid-template-columns:1fr 1fr}}

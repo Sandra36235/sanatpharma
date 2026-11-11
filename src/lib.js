@@ -39,6 +39,7 @@ export async function save(table, values, id) {
   const request = id ? supabase.from(table).update(values).eq('id',id).select('id').single() : supabase.from(table).insert(values).select('id').single();
   const {data,error}=await request; if(error) throw error; return data;
 }
+export async function insertMany(table,rows){const {error}=await supabase.from(table).insert(rows);if(error)throw error;return rows.length;}
 export async function remove(table,id){const {error}=await supabase.from(table).delete().eq('id',id);if(error)throw error;}
 export async function rpc(name, args) {
   const {data,error}=await supabase.rpc(name,args); if(error) throw error; return data;
