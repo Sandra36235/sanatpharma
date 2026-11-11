@@ -31,3 +31,11 @@ La usuaria eligió probar primero en esta computadora. Se configuró la URL de a
 El intento alternativo de alta manual fue bloqueado por revisión automática. La usuaria eligió completar ella misma ese paso en el panel. La tercera cuenta y su perfil de consulta deben comprobarse tras ese alta; no se consideran completados antes de verificarlo. No se introdujeron ni guardaron contraseñas por parte del agente. Los correos y UUID reales no se incluyen en el repositorio público.
 
 Queda pendiente la prueba de inicio de sesión con contraseña definida por su titular y el alojamiento accesible para todo el equipo. Los enlaces de autenticación locales deben reemplazarse por la URL final antes del uso desde otras computadoras.
+
+## Pagos, costos y planificación · 11 de noviembre de 2026
+
+Se aplicó `202611110008_pagos_costos_planificacion.sql` mediante el conector de Supabase (registrada como `pagos_costos_planificacion`). Pasan 31 pruebas locales (22 anteriores y 9 nuevas de giros, hoja de costos, planificación y permisos). Asesor de seguridad: sin hallazgos nuevos.
+
+En la base (no en el repositorio) se cargó una hoja de costos real completa: precios de la factura, anticipos aplicados, cancelación, gastos y lotes. Los documentos del proveedor principal pasaron a USD (no tenían precios cargados). El resultado coincide con el Excel. Los giros cargados desde la hoja llevan una observación para verificar fecha e importe.
+
+La interfaz se publica en GitHub Pages desde la rama `gh-pages` (flujo `.github/workflows/pages.yml`). La clave usada es la publishable; la clave secreta no está en el repositorio.

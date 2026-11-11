@@ -1,0 +1,37 @@
+/* Pantallas de planificación, proveedores, pagos y costos */
+.badge.red{background:#fbeae4;color:#a8553a;font-weight:600}
+.title-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.row-actions{display:flex;gap:14px;align-items:center}
+.row-selected{background:#f4f8ee}
+.qty-input{width:96px;text-align:right;padding:6px 8px;border:1px solid #dfe6da;border-radius:5px;font-size:11px;background:#fff}
+.pct-input{width:76px}
+.planning-note{margin-bottom:22px}
+.selection-bar{display:flex;align-items:center;gap:18px;justify-content:flex-end;padding:16px 25px;border-top:1px solid #edf0e8;background:#f7faf2;font-size:12px;flex-wrap:wrap}
+.selection-bar>span:first-child{margin-right:auto;color:#53704a;font-weight:600}
+.format-hint{background:#f6f8f2;border:1px solid #e6ece0;border-radius:6px;padding:12px 14px;font-size:11px;color:#5f7259;white-space:pre-wrap;margin:0 0 14px}
+.model-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#edf0e8;border-top:1px solid #edf0e8}
+.model-grid>div{background:#fff;padding:20px 25px}
+.model-grid strong{font-family:'Manrope',sans-serif;font-size:12px;color:#354c39}
+.model-grid p{font-size:11px;line-height:1.7;color:#7d8a78;margin:8px 0 0}
+.back-link{margin-bottom:14px}
+.cost-head .panel-title h2{margin-top:6px}
+.cost-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:#edf0e8;border-block:1px solid #edf0e8}
+.cost-summary>div{background:#fff;padding:18px 22px}
+.cost-summary small{font-size:9px;color:#8a9484;letter-spacing:.2px}
+.cost-summary strong{display:block;font-family:'Manrope',sans-serif;font-size:19px;font-weight:650;color:#26443a;margin-top:8px;letter-spacing:-.4px}
+.cost-summary .highlight{background:#edf3e8}
+.cost-summary .highlight strong{color:#214f43;font-size:22px}
+.cost-formula{padding:4px 25px 18px!important;margin:12px 0 0}
+.cost-head>.inline-note{margin:0 25px 14px}
+.group-row td{background:#f8faf5;padding-top:12px;padding-bottom:12px}
+.group-row strong{color:#3c5b42}
+.check{display:flex;gap:9px;align-items:center;font-size:12px;color:#5f705b;margin:4px 0 14px}
+.stepper{display:flex;gap:6px;margin:4px 0 18px;flex-wrap:wrap}
+.stepper span{flex:1;min-width:90px;text-align:center;padding:8px 6px;border-radius:5px;background:#f2f4ef;color:#97a08f;font-size:10px;font-weight:600;letter-spacing:.3px}
+.stepper span.done{background:#e6efe0;color:#3f6a43}
+.condition-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 18px;margin-bottom:18px;padding:16px;border:1px solid #edf0e8;border-radius:7px}
+.condition-grid small{font-size:9px;color:#949e8d}
+.condition-grid strong{display:block;font-size:12px;font-weight:550;color:#3c5241;margin-top:4px}
+.milestones.four{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1100px){.cost-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.model-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.condition-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.cost-summary,.model-grid,.condition-grid{grid-template-columns:1fr}.milestones.four{grid-template-columns:repeat(2,1fr)}}
