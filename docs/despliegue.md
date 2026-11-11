@@ -39,3 +39,7 @@ Se aplicó `202611110008_pagos_costos_planificacion.sql` mediante el conector de
 En la base (no en el repositorio) se cargó una hoja de costos real completa: precios de la factura, anticipos aplicados, cancelación, gastos y lotes. Los documentos del proveedor principal pasaron a USD (no tenían precios cargados). El resultado coincide con el Excel. Los giros cargados desde la hoja llevan una observación para verificar fecha e importe.
 
 La interfaz se publica en GitHub Pages desde la rama `gh-pages` (flujo `.github/workflows/pages.yml`). La clave usada es la publishable; la clave secreta no está en el repositorio.
+
+## Datos de prueba · 11 de noviembre de 2026
+
+Respaldo completo de `public` en el esquema `respaldo_20261111` (27 tablas, 3.225 filas, conteo verificado). Se aplicó `202611110009_sugerido_solo_con_alerta.sql` y se cargó `supabase/datos-prueba.sql`. Para volver a los datos reales: `supabase/restaurar-respaldo.sql`.

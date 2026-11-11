@@ -13,6 +13,7 @@ Herramienta para planificar compras (pedido sugerido), registrar proformas y fac
 - [Interfaz, acceso y ejecución local](docs/interfaz.md)
 - [Pagos, hoja de costos y pedido sugerido](docs/pagos-costos-planificacion.md)
 - [Scripts para ONIX (MySQL 5.5)](onix/LEEME.md)
+- [Datos de prueba y respaldo](docs/datos-de-prueba.md)
 
 La documentación conserva las decisiones tomadas durante el trabajo con el Excel FORECAST Y CONTROL. El repositorio incluye la interfaz web, las migraciones ejecutables de Supabase y pruebas de integridad, permisos, forecast y guardado de documentos.
 
